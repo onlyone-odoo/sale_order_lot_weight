@@ -10,7 +10,7 @@
     "maintainers": ["onlyone-odoo"],
     "website": "https://onlyone.odoo.com/",
     "category": "Sales",
-    "version": "17.0.1.2.0",
+    "version": "17.0.1.2.1",
     "depends": ["stock", "sale", "account"],
     "data": [
         "views/stock_lot_views.xml",
