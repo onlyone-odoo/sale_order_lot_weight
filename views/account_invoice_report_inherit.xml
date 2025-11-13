@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Inherit account invoice report template to add total_weight column -->
+    <template id="account_invoice_report_total_weight" inherit_id="account.report_invoice_document">
+        <!-- Add header for Total Weight column after Quantity -->
+        <xpath expr="//th[@name='th_quantity']" position="after">
+            <th name="th_total_weight" class="text-end">
+                <span>Total Weight</span>
+            </th>
+        </xpath>
+
+        <!-- Add cell for Total Weight in product lines after Quantity cell -->
+        <xpath expr="//td[@name='td_quantity']" position="after">
+            <td name="td_total_weight" class="text-end">
+                <span t-field="line.total_weight" t-options="{'widget': 'float', 'precision': 2}"/>
+                <span t-if="line.total_weight"> kg</span>
+            </td>
+        </xpath>
+
+    </template>
+</odoo>

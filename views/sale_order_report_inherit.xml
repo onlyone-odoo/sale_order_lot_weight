@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Inherit sale order report template to add total_weight column -->
+    <template id="sale_order_report_total_weight" inherit_id="sale.report_saleorder_document">
+        <!-- Add header for Total Weight column after Quantity -->
+        <xpath expr="//th[@name='th_quantity']" position="after">
+            <th name="th_total_weight" class="text-end">Total Weight</th>
+        </xpath>
+
+        <!-- Add cell for Total Weight in normal lines after Quantity cell -->
+        <xpath expr="//td[@name='td_quantity']" position="after">
+            <td name="td_total_weight" class="text-end">
+                <span t-field="line.total_weight" t-options="{'widget': 'float', 'precision': 2}"/>
+                <!-- Assuming total_weight is in kg; adjust unit display if needed -->
+                <span t-if="line.total_weight"> kg</span>
+            </td>
+        </xpath>
+
+        <!-- Adjust colspan in section and note lines to account for the new column -->
+        <xpath expr="//td[@name='td_section_line']" position="attributes">
+            <attribute name="colspan">100</attribute>  <!-- Increased from 99 to include new column -->
+        </xpath>
+        <xpath expr="//td[@name='td_note_line']" position="attributes">
+            <attribute name="colspan">100</attribute>  <!-- Same adjustment -->
+        </xpath>
+    </template>
+</odoo>
