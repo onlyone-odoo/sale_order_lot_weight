@@ -10,7 +10,7 @@
     "maintainers": ["onlyone-odoo"],
     "website": "https://onlyone.odoo.com/",
     "category": "Sales",
-    "version": "17.0.1.2.1",
+    "version": "17.0.1.3.1",
     "depends": ["stock", "sale", "account"],
     "data": [
         "views/stock_lot_views.xml",
@@ -19,6 +19,7 @@
         "views/account_invoice_views.xml",
         "views/sale_order_report_inherit.xml",
         "views/account_invoice_report_inherit.xml",
+        "views/stock_picking_report_inherit.xml",
     ],
     "application": False,
     "installable": True,

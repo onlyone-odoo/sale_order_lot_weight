@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Inherit stock picking report to add weight column after Product -->
+    <template id="stock_picking_report_weight" inherit_id="stock.report_picking">
+        <!-- Add header for Weight column after Product -->
+        <xpath expr="//th[@name='th_product']" position="after">
+            <th name="th_weight" class="text-end">
+                <strong>Weight</strong>
+            </th>
+        </xpath>
+
+        <!-- Add cell for Weight in move lines after Product cell -->
+        <xpath expr="//td[span[@t-field='ml.product_id.display_name']]" position="after">
+            <td name="td_weight" class="text-end">
+                <span t-field="ml.weight" t-options="{'widget': 'float', 'precision': 2}"/>
+                <span t-if="ml.weight"> kg</span>
+            </td>
+        </xpath>
+    </template>
+</odoo>
