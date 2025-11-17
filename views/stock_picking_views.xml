@@ -8,6 +8,7 @@
             <xpath expr="/tree/field[@name='lot_name']" position="after">
                 <field name="weight" readonly="lot_id != False" groups="stock.group_production_lot" sum="Total Weight"/>
             </xpath>
+            <tree js_class="custom_navigation"/>
         </field>
     </record>
 </odoo>

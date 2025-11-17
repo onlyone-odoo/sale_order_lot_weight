@@ -10,7 +10,7 @@
     "maintainers": ["onlyone-odoo"],
     "website": "https://onlyone.odoo.com/",
     "category": "Sales",
-    "version": "17.0.3.4.2",
+    "version": "17.0.3.5.2",
     "depends": ["stock", "sale", "account", "purchase"],
     "data": [
         "views/stock_lot_views.xml",
@@ -22,6 +22,11 @@
         "views/stock_picking_report_inherit.xml",
         "views/purchase_views.xml",
     ],
+    "assets": {
+        "web.assets_backend": [
+            "sale_order_lot_weight/static/src/js/custom_navigation.js",
+        ],
+    },
     "application": False,
     "installable": True,
 }
