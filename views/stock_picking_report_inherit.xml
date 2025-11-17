@@ -1,21 +1,36 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-    <!-- Inherit stock picking report to add weight column after Product -->
     <template id="stock_picking_report_weight" inherit_id="stock.report_picking">
-        <!-- Add header for Weight column after Product -->
+
+        <!-- Columna Peso (KG) -->
         <xpath expr="//th[@name='th_product']" position="after">
-            <th name="th_weight" class="text-end">
-                <strong>Weight</strong>
-            </th>
+            <th name="th_weight" class="text-end"><strong>Weight (KG)</strong></th>
         </xpath>
 
-        <!-- Add cell for Weight in move lines after Product cell -->
+        <!-- Celda peso por línea -->
         <xpath expr="//td[span[@t-field='ml.product_id.display_name']]" position="after">
             <td name="td_weight" class="text-end">
-                <span t-field="ml.weight" t-options="{'widget': 'float', 'precision': 2}"/>
+                <span t-field="ml.weight" t-options='{"widget": "float", "precision": 3}'/>
                 <span t-if="ml.weight"> kg</span>
             </td>
         </xpath>
+
+        <!-- TOTALES ARRIBA DE LA TABLA -->
+        <xpath expr="//table[@class='table table-sm o_main_table']" position="before">
+            <!-- Calculamos total peso y total bultos (número de líneas) -->
+            <t t-set="total_weight" t-value="sum((ml.weight or 0.0) for ml in o.move_line_ids)"/>
+            <t t-set="total_packages" t-value="len(o.move_line_ids)"/>
+
+            <div class="row mb-4">
+                <div class="col-12 text-end">
+                    <strong style="font-size: 1.3em;">
+                        Total Packages: <span t-esc="total_packages"/> | 
+                        Total Weight: 
+                        <span t-esc="total_weight" t-options='{"widget": "float", "precision": 3}'/> kg
+                    </strong>
+                </div>
+            </div>
+        </xpath>
+
     </template>
-    
 </odoo>
