@@ -1,5 +1,3 @@
-/** @odoo-module **/
-
 odoo.define('sale_order_lot_weight.custom_navigation', function (require) {
     "use strict";
 
