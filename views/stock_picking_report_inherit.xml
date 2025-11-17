@@ -16,7 +16,7 @@
         </xpath>
 
         <!-- TOTALES ARRIBA DE LA TABLA -->
-        <xpath expr="//table[@class='table table-sm o_main_table']" position="before">
+        <xpath expr="//table[@class='table table-sm']" position="before">
             <!-- Calculamos total peso y total bultos (número de líneas) -->
             <t t-set="total_weight" t-value="sum((ml.weight or 0.0) for ml in o.move_line_ids)"/>
             <t t-set="total_packages" t-value="len(o.move_line_ids)"/>
