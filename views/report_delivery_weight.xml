@@ -2,59 +2,48 @@
 <odoo>
     <data>
 
-        <!-- ============================================================= -->
-        <!-- 1. Líneas pendientes (state != 'done') - usamos stock.move      -->
-        <!--    En Odoo 17 no hay lot_id aún → mostramos vacío            -->
-        <!-- ============================================================= -->
-        <template id="report_delivery_document_weight_header_pending" inherit_id="stock.report_delivery_document">
+        <!-- Header pendientes -->
+        <template id="w17_pending_header" inherit_id="stock.report_delivery_document">
             <xpath expr="//table[@name='stock_move_table']//th[@name='th_sm_product']" position="after">
-                <th name="th_weight" class="text-end"><strong>Weight (KG)</strong></th>
+                <th class="text-end"><strong>Weight (KG)</strong></th>
             </xpath>
         </template>
-
-        <template id="report_delivery_document_weight_pending" inherit_id="stock.report_delivery_document">
+        <template id="w17_pending_lines" inherit_id="stock.report_delivery_document">
             <xpath expr="//table[@name='stock_move_table']//td[1]" position="after">
                 <td class="text-end">-</td>
             </xpath>
         </template>
 
-        <!-- ============================================================= -->
-        <!-- 2. Líneas entregadas (state == 'done')                         -->
-        <!-- ============================================================= -->
-
-        <!-- Header común -->
-        <template id="report_delivery_document_weight_header_done" inherit_id="stock.report_delivery_document">
+        <!-- Header entregadas -->
+        <template id="w17_done_header" inherit_id="stock.report_delivery_document">
             <xpath expr="//table[@name='stock_move_line_table']//th[@name='th_sml_product']" position="after">
-                <th name="th_weight" class="text-end"><strong>Weight (KG)</strong></th>
+                <th class="text-end"><strong>Weight (KG)</strong></th>
             </xpath>
         </template>
 
-        <!-- 2a. Cuando se imprimen lotes/seriales (sub-template) -->
-        <template id="report_delivery_has_serial_move_line_weight" inherit_id="stock.report_delivery_has_serial_move_line">
+        <!-- Líneas con lote/serial (XMLID correcto en v17) -->
+        <template id="w17_serial_line" inherit_id="stock.report_delivery_document_has_serial_move_line">
             <xpath expr="//td[span[@t-field='move_line.product_id']]" position="after">
                 <td class="text-end">
-                    <span t-field="move_line.weight" t-options="{'widget': 'monetary', 'display_currency': False}"/>
+                    <span t-field="move_line.weight" t-options="{'widget': 'float', 'precision': 2}"/>
                     <t t-if="move_line.weight"> kg</t>
                 </td>
             </xpath>
         </template>
 
-        <!-- 2b. Cuando se agrupan líneas (sin mostrar lotes) -->
-        <template id="report_delivery_aggregated_move_lines_weight" inherit_id="stock.report_delivery_aggregated_move_lines">
+        <!-- Líneas agregadas -->
+        <template id="w17_aggregated_line" inherit_id="stock.report_delivery_aggregated_move_lines">
             <xpath expr="//td[span[@t-field='line.product_id']]" position="after">
                 <td class="text-end">
-                    <!-- En Odoo 17 el dict tiene 'move_lines' (recordset), tomamos el primero -->
-                    <span t-set="first_ml" t-value="line['move_lines'][:1]"/>
-                    <span t-if="first_ml" t-esc="first_ml.weight" t-options="{'widget': 'float', 'precision': 2}"/>
+                    <t t-set="first_ml" t-value="line['move_lines'][:1]"/>
+                    <span t-if="first_ml" t-field="first_ml.weight" t-options="{'widget': 'float', 'precision': 2}"/>
                     <t t-if="first_ml and first_ml.weight"> kg</t>
                 </td>
             </xpath>
         </template>
 
-        <!-- ============================================================= -->
-        <!-- 3. Backorders (cantidades pendientes)                         -->
-        <!-- ============================================================= -->
-        <template id="report_delivery_backorder_weight" inherit_id="stock.report_delivery_document">
+        <!-- Backorders -->
+        <template id="w17_backorder" inherit_id="stock.report_delivery_document">
             <xpath expr="//table[@name='stock_backorder_table']//th[@name='th_sb_product']" position="after">
                 <th class="text-end"><strong>Weight (KG)</strong></th>
             </xpath>
@@ -63,10 +52,8 @@
             </xpath>
         </template>
 
-        <!-- ============================================================= -->
-        <!-- 4. Ajuste de colspan en secciones de paquetes (de 3 → 4)       -->
-        <!-- ============================================================= -->
-        <template id="report_delivery_package_colspan" inherit_id="stock.report_delivery_document">
+        <!-- Colspan paquetes -->
+        <template id="w17_colspan" inherit_id="stock.report_delivery_document">
             <xpath expr="//td[@t-attf-colspan='3']" position="attributes">
                 <attribute name="colspan">4</attribute>
             </xpath>
