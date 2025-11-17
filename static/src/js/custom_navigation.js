@@ -1,4 +1,4 @@
-odoo.define('sale_order_lot_weight.custom_navigation', function (require) {
+odoo.define('sale_order_lot_weight.custom_navigation', ['web.ListRenderer'], function (require) {
     "use strict";
 
     var ListRenderer = require('web.ListRenderer');
