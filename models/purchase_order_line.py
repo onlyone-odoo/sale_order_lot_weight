@@ -6,9 +6,9 @@ class PurchaseOrderLine(models.Model):
     _inherit = "purchase.order.line"
 
     purchase_weight = fields.Float(
-        string="Estimated Weight (KG)",
+        string="Purchased Weight (KG)",
         digits="Product Unit of Measure",
-        help="Estimated total weight in KG for this line (used for pricing per KG).",
+        help="Total weight in KG for this line (used for pricing per KG).",
     )
 
     @api.depends("purchase_weight", "price_unit", "product_qty", "discount", "taxes_id")
@@ -30,21 +30,16 @@ class PurchaseOrderLine(models.Model):
                     t.get("amount", 0.0) for t in taxes.get("taxes", [])
                 )
                 line.price_total = line.price_subtotal + line.price_tax
-            else:
-                # Fall back to standard quantity-based calculation
-                pass
 
     @api.onchange("purchase_weight")
     def _onchange_purchase_weight(self):
         """Trigger recompute of amounts on purchase_weight change."""
         self._compute_amount()
-        if self.order_id:
-            self.order_id._compute_amounts()
-        return {}
+        # No call to order._compute_amounts() – the depends handles it
 
     def _convert_to_tax_base_line_dict(self):
         """Use purchase_weight as quantity for tax base when available."""
         res = super()._convert_to_tax_base_line_dict()
         if self.purchase_weight > 0:
-            res["quantity"] = self.purchase_weight  # Tax base uses estimated weight
+            res["quantity"] = self.purchase_weight  # Tax base uses purchased weight
         return res
