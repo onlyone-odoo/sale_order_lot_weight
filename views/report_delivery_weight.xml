@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <!-- 1. Columna Peso después del producto en todas las tablas -->
+
+        <!-- 1. Tabla de líneas pendientes (state != 'done') -->
+        <template id="delivery_slip_weight_pending_header" inherit_id="stock.report_delivery_document">
+            <xpath expr="//th[@name='th_sm_product']" position="after">
+                <th name="th_weight" class="text-end">
+                    <strong>Weight</strong>
+                </th>
+            </xpath>
+        </template>
+
+        <template id="delivery_slip_weight_pending_lines" inherit_id="stock.report_delivery_document">
+            <xpath expr="//table[@name='stock_move_table']//td[1]" position="after">
+                <td name="td_weight" class="text-end">
+                    <span t-esc="move.quantity * move.product_id.weight" t-options="{'widget': 'float', 'precision': 2}"/>
+                    <span> kg</span>
+                </td>
+            </xpath>
+        </template>
+
+        <!-- 2. Tabla de líneas entregadas (state == 'done') -->
+        <template id="delivery_slip_weight_done_header" inherit_id="stock.report_delivery_document">
+            <xpath expr="//th[@name='th_sml_product']" position="after">
+                <th name="th_weight" class="text-end">
+                    <strong>Weight</strong>
+                </th>
+            </xpath>
+        </template>
+
+        <!-- 3. Líneas agregadas (aggregated_move_lines) -->
+        <template id="delivery_slip_aggregated_move_lines_weight" inherit_id="stock.stock_report_delivery_aggregated_move_lines">
+            <xpath expr="//td[1]" position="after">
+                <td class="text-end">
+                    <span t-esc="aggregated_line_value['quantity'] * aggregated_line_value['product'].weight" t-options="{'widget': 'float', 'precision': 2}"/>
+                    <span> kg</span>
+                </td>
+            </xpath>
+        </template>
+
+        <!-- 4. Líneas con lote/serial (has_serial_move_line) -->
+        <template id="delivery_slip_has_serial_move_line_weight" inherit_id="stock.stock_report_delivery_has_serial_move_line">
+            <xpath expr="//td[1]" position="after">
+                <td class="text-end">
+                    <span t-field="move_line.weight" t-options="{'widget': 'float', 'precision': 2}"/>
+                    <span> kg</span>
+                </td>
+            </xpath>
+        </template>
+
+        <!-- 5. Tabla de backorders (si hay entregas parciales) -->
+        <template id="delivery_slip_backorder_weight" inherit_id="stock.report_delivery_document">
+            <xpath expr="//th[@name='th_sb_product']" position="after">
+                <th class="text-end">
+                    <strong>Weight</strong>
+                </th>
+            </xpath>
+            <xpath expr="//table[@name='stock_backorder_table']//td[1]" position="after">
+                <td class="text-end">
+                    <span t-esc="bo_line.product_uom_qty * bo_line.product_id.weight" t-options="{'widget': 'float', 'precision': 2}"/>
+                    <span> kg</span>
+                </td>
+            </xpath>
+        </template>
+
+        <!-- 6. Ajuste de colspan para las secciones de paquetes (siempre 3 columnas base → 4) -->
+        <template id="delivery_slip_package_colspan" inherit_id="stock.report_delivery_document">
+            <xpath expr="//td[@colspan='3']" position="attributes">
+                <attribute name="colspan">4</attribute>
+            </xpath>
+        </template>
+
+        <!-- Si prefieres el colspan en las sub-templates por separado (más seguro) -->
+        <template id="package_section_colspan" inherit_id="stock.stock_report_delivery_package_section_line">
+            <xpath expr="//td[@colspan]" position="attributes">
+                <attribute name="colspan">4</attribute>
+            </xpath>
+        </template>
+
+        <template id="no_package_section_colspan" inherit_id="stock.stock_report_delivery_no_package_section_line">
+            <xpath expr="//td[@colspan]" position="attributes">
+                <attribute name="colspan">4</attribute>
+            </xpath>
+        </template>
+
+    </data>
+</odoo>

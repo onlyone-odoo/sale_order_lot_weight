@@ -6,11 +6,8 @@
         <field name="inherit_id" ref="stock.view_stock_move_line_detailed_operation_tree"/>
         <field name="arch" type="xml">
             <xpath expr="/tree/field[@name='lot_name']" position="after">
-                <field name="weight" readonly="lot_id != False" groups="stock.group_production_lot"/>
+                <field name="weight" readonly="lot_id != False" groups="stock.group_production_lot" sum="Peso Total"/>
             </xpath>
-            <tree position="attributes">
-                <attribute name="js_class">custom_navigation</attribute>
-            </tree>
         </field>
     </record>
 </odoo>
