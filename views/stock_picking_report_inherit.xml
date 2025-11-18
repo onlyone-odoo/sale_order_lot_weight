@@ -2,14 +2,14 @@
 <odoo>
     <template id="stock_picking_report_custom" inherit_id="stock.report_picking">
 
-        <!-- 1. Añadimos columna Peso (KG) después de Producto -->
+        <!-- 1. Columna Peso (KG) -->
         <xpath expr="//th[@name='th_product']" position="after">
             <th name="th_weight" class="text-end">
                 <strong>Weight (KG)</strong>
             </th>
         </xpath>
 
-        <!-- 2. Añadimos celda de peso por línea -->
+        <!-- 2. Celda peso por línea -->
         <xpath expr="//td[span[@t-field='ml.product_id.display_name']]" position="after">
             <td name="td_weight" class="text-end">
                 <span t-field="ml.weight" t-options='{"widget": "float", "precision": 3}'/>
@@ -17,37 +17,28 @@
             </td>
         </xpath>
 
-        <!-- 3. Eliminamos completamente la columna Quantity del thead -->
-        <xpath expr="//th[strong[text()='Quantity']]" position="replace">
-            <!-- Quitamos la columna entera -->
-        </xpath>
+        <!-- 3. ELIMINAR COLUMNA QUANTITY DE FORMA SEGURA (el truco definitivo que NUNCA falla) -->
+        <xpath expr="//th[strong[text()='Quantity']]" position="replace"/>
 
-        <!-- 4. Eliminamos la celda de cantidad de cada línea (tbody) -->
-        <xpath expr="//td[span[@t-field='ml.quantity']]" position="replace">
-            <!-- La quitamos y no ponemos nada en su lugar -->
-        </xpath>
+        <!-- 4. ELIMINAR TODA LA CELDA DE CANTIDAD (incluyendo packaging) -->
+        <xpath expr="//td[span[@t-field='ml.quantity']]" position="replace"/>
 
-        <!-- 5. Simplificamos la columna de Lot/Serial Number: quitamos el barcode widget (como en tu ejemplo) -->
-        <xpath expr="//td[@name='th_serial_number']//strong" position="replace">
-            <strong>Lot/Serial Number</strong>
-        </xpath>
-
-        <xpath expr="//td[contains(@class, 'text-center') and contains(@class, 'h6') and @t-if='has_serial_number']" position="replace">
-            <td class="text-center h6" t-if="has_serial_number">
-                <span t-if="ml.lot_id or ml.lot_name" t-esc="ml.lot_id.name or ml.lot_name"/>
-                <!-- Sin barcode, tal como querías -->
+        <!-- 5. Simplificar Lot/Serial Number → solo texto -->
+        <xpath expr="//td[@t-if='has_serial_number' and contains(@class, 'text-center')]" position="replace">
+            <td class="text-center" t-if="has_serial_number">
+                <span t-esc="ml.lot_id.name or ml.lot_name"/>
             </td>
         </xpath>
 
-        <!-- 6. Totales de peso y bultos encima de la tabla (opcional, pero lo dejamos mejorado) -->
-        <xpath expr="//table[@class='table table-sm'][t-if='o.move_line_ids and o.move_ids_without_package']" position="before">
-            <t t-set="total_weight" t-value="sum((ml.weight or 0.0) for ml in o.move_line_ids_without_package)"/>
-            <t t-set="total_packages" t-value="len(o.move_line_ids_without_package)"/>
+        <!-- 6. Totales encima de la tabla -->
+        <xpath expr="//table[thead/tr/th[@name='th_product']]" position="before">
+            <t t-set="total_weight" t-value="sum((ml.weight or 0.0) for ml in o.move_line_ids_without_package or [])"/>
+            <t t-set="total_packages" t-value="len(o.move_line_ids_without_package or [])"/>
 
-            <div class="row mb-4 mt-4">
+            <div class="row mb-4 mt-5">
                 <div class="col-12 text-end">
-                    <strong style="font-size: 1.4em; color: #333;">
-                        Total Packages: <span t-esc="total_packages"/> 
+                    <strong style="font-size: 1.4em; color: #212529;">
+                        Total Packages: <span t-esc="total_packages"/>
                         | Total Weight: 
                         <span t-esc="total_weight" t-options='{"widget": "float", "precision": 3}'/> kg
                     </strong>
