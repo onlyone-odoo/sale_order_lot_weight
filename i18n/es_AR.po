@@ -93,7 +93,7 @@ msgstr "El peso en kilogramos de este lote (por ejemplo, una caja de carne)."
 #. module: sale_order_lot_weight
 #: model_terms:ir.ui.view,arch_db:sale_order_lot_weight.stock_picking_report_weight
 msgid "Total Packages:"
-msgstr "Bultos"
+msgstr "Cajas"
 
 #. module: sale_order_lot_weight
 #: model_terms:ir.ui.view,arch_db:sale_order_lot_weight.sale_order_report_total_weight
