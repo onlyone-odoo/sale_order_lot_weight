@@ -1,50 +1,73 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-    <template id="stock_picking_report_custom" inherit_id="stock.report_picking">
+    <template id="report_picking_compact" inherit_id="stock.report_picking">
+        <xpath expr="//div[@class='page']/div[1]" position="replace">
+            <div class="row">
+                <div class="col-4">
+                    <strong>Dirección de envío:</strong><br/>
+                    <span t-field="o.partner_id" t-options='{"widget": "contact", "fields": ["name", "street", "city"], "no_marker": True}'/>
+                </div>
+                <div class="col-4 text-center">
+                    <h1 style="margin: 0; font-size: 2.2em;">
+                        <strong t-field="o.name"/>
+                    </h1>
+                </div>
+                <div class="col-4 text-end">
+                    <div t-field="o.name" t-options='{"widget": "barcode", "width": 300, "height": 60}'/>
+                </div>
+            </div>
 
-        <!-- 1. Columna Peso (KG) -->
-        <xpath expr="//th[@name='th_product']" position="after">
-            <th name="th_weight" class="text-end">
-                <strong>Weight (KG)</strong>
-            </th>
-        </xpath>
-
-        <!-- 2. Celda peso por línea -->
-        <xpath expr="//td[span[@t-field='ml.product_id.display_name']]" position="after">
-            <td name="td_weight" class="text-end">
-                <span t-field="ml.weight" t-options='{"widget": "float", "precision": 3}'/>
-                <span t-if="ml.weight"> kg</span>
-            </td>
-        </xpath>
-
-        <!-- 3. ELIMINAR COLUMNA QUANTITY DE FORMA SEGURA (el truco definitivo que NUNCA falla) -->
-        <xpath expr="//th[strong[text()='Quantity']]" position="replace"/>
-
-        <!-- 4. ELIMINAR TODA LA CELDA DE CANTIDAD (incluyendo packaging) -->
-        <xpath expr="//td[span[@t-field='ml.quantity']]" position="replace"/>
-
-        <!-- 5. Simplificar Lot/Serial Number → solo texto -->
-        <xpath expr="//td[@t-if='has_serial_number' and contains(@class, 'text-center')]" position="replace">
-            <td class="text-center" t-if="has_serial_number">
-                <span t-esc="ml.lot_id.name or ml.lot_name"/>
-            </td>
-        </xpath>
-
-        <!-- 6. Totales encima de la tabla -->
-        <xpath expr="//table[thead/tr/th[@name='th_product']]" position="before">
-            <t t-set="total_weight" t-value="sum((ml.weight or 0.0) for ml in o.move_line_ids_without_package or [])"/>
-            <t t-set="total_packages" t-value="len(o.move_line_ids_without_package or [])"/>
-
-            <div class="row mb-4 mt-5">
-                <div class="col-12 text-end">
-                    <strong style="font-size: 1.4em; color: #212529;">
-                        Total Packages: <span t-esc="total_packages"/>
-                        | Total Weight: 
-                        <span t-esc="total_weight" t-options='{"widget": "float", "precision": 3}'/> kg
-                    </strong>
+            <div class="row mb-2">
+                <div class="col-4">
+                    <strong>Orden:</strong> <span t-field="o.origin"/>
+                </div>
+                <div class="col-4 text-center">
+                    <strong>Fecha programada:</strong> <span t-field="o.scheduled_date" t-options='{"widget": "date"}'/>
+                </div>
+                <div class="col-4 text-end">
+                    <h3 style="margin: 0; color: #2c3e50;">
+                        <strong>
+                            Cajas: <span t-esc="len(o.move_line_ids)"/> |
+                            Peso Total: 
+                            <span t-esc="sum((ml.weight or 0.0) for ml in o.move_line_ids)" 
+                                  t-options='{"widget": "float", "precision": 3}'/> kg
+                        </strong>
+                    </h3>
                 </div>
             </div>
         </xpath>
 
+        <!-- Eliminar direcciones duplicadas -->
+        <xpath expr="//div[@name='div_outgoing_address']" position="replace"/>
+        <xpath expr="//h1[@class='mt0']" position="replace"/>
+
+        <!-- Quitar solo las clases mt32 mb32 del row, manteniendo el div -->
+        <xpath expr="//div[@class='row mt32 mb32']" position="attributes">
+            <attribute name="class">row</attribute>
+        </xpath>
+
+        <!-- Tabla compacta: Producto | Lote | Peso -->
+        <xpath expr="//table[@class='table table-sm']" position="replace">
+            <table class="table table-sm table-bordered" style="font-size: 10px;">
+                <thead class="thead-light">
+                    <tr>
+                        <th><strong>Producto</strong></th>
+                        <th><strong>Lote</strong></th>
+                        <th class="text-end"><strong>Peso (KG)</strong></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <t t-foreach="o.move_line_ids" t-as="ml">
+                        <tr>
+                            <td><span t-field="ml.product_id.display_name"/></td>
+                            <td><strong t-esc="ml.lot_id.name or ml.lot_name or '—'"/></td>
+                            <td class="text-end">
+                                <span t-esc="ml.weight or 0.0" t-options='{"widget": "float", "precision": 3}'/> kg
+                            </td>
+                        </tr>
+                    </t>
+                </tbody>
+            </table>
+        </xpath>
     </template>
 </odoo>
