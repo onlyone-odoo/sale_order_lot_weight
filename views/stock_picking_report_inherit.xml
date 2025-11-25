@@ -42,22 +42,21 @@
         <xpath expr="//div[@class='row mt32 mb32']" position="attributes">
             <attribute name="class">row</attribute>
         </xpath>
-        <!-- Tabla compacta: Producto | Detalles (lote , peso, lote , peso, ...) -->
+        <!-- Tabla compacta: Producto | Pesos (separados por espacios) -->
         <xpath expr="//table[@class='table table-sm']" position="replace">
             <t t-set="grouped_lines" t-value="{}"/>
             <t t-foreach="o.move_line_ids.sorted(lambda ml: ml.product_id.display_name)" t-as="ml">
                 <t t-set="product_key" t-value="ml.product_id.id"/>
                 <t t-if="product_key not in grouped_lines">
-                    <t t-set="_dummy" t-value="grouped_lines.update({product_key: {'name': ml.product_id.display_name, 'lots': [], 'weights': []}})"/>
+                    <t t-set="_dummy" t-value="grouped_lines.update({product_key: {'name': ml.product_id.display_name, 'weights': []}})"/>
                 </t>
-                <t t-set="_dummy" t-value="grouped_lines[product_key]['lots'].append(ml.lot_id.name or ml.lot_name or '—')"/>
                 <t t-set="_dummy" t-value="grouped_lines[product_key]['weights'].append('%.3f kg' % (ml.weight or 0.0))"/>
             </t>
             <table class="table table-sm table-bordered" style="font-size: 10px;">
                 <thead class="thead-light">
                     <tr>
                         <th><strong>Producto</strong></th>
-                        <th><strong>Detalles (Lote , Peso)</strong></th>
+                        <th><strong>Pesos (KG)</strong></th>
                     </tr>
                 </thead>
                 <tbody>
@@ -65,7 +64,7 @@
                         <tr>
                             <td><span t-esc="group['name']"/></td>
                             <td style="white-space: pre-wrap; word-wrap: break-word;">
-                                <strong t-esc="', '.join(['%s , %s' % (lot, weight) for lot, weight in zip(group['lots'], group['weights'])])"/>
+                                <strong t-esc="' '.join(group['weights'])"/>
                             </td>
                         </tr>
                     </t>
